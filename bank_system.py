@@ -19,5 +19,3 @@ class BankSystem:
             if account.get_account_number() == account_number:
                 return account
         return False
-
-

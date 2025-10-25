@@ -85,8 +85,6 @@ def hisobga_kirish():
         print("Bunday account topilmadi !")
 
 
-
-
 def main():
     command = {
         1 : hisob_ochish,
