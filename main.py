@@ -1,104 +1,96 @@
-from bank_accaunt import BankAccount
-from bank_system import BankSystem
+from car import RentCar
+from user import Users
 
-class BankApp:
+class RentCarApp:
     def __init__(self):
-        self.bank = BankSystem()
+        self.cars = RentCar()
 
     def menu(self):
-        print('''
-        1. Hisob ochish
-        2. Hisobga kirish
-        0. Chiqish
-        ''')
+        print("""
+            === 🚘 AVTOMOBIL IJARASI TIZIMI ===
+            1. Ro‘yxatdan o‘tish
+            2. Tizimga kirish
+            3. Mashinalarni ko‘rish
+            4. Mashina qo‘shish
+            5. Mashina ijaraga olish
+            6. Mashinani qaytarish
+            7. Ijara tarixim
+            8. Tizimdan chiqish
+            9. Chiqish
+        """)
 
-    def bank_menu(self):
-        print('''
-        === Bank menyusi ===
-        1. Balansni ko‘rish
-        2. Pul qo‘shish
-        3. Pul yechish
-        4. Pul o‘tkazish
-        0. Chiqish  
-        ''')
+    def log_in(self, users: Users):
+        try:
+            email = input("📧 Emailingizni kiriting: ")
+            password = int(input("🔑 Parolni kiriting: "))
+            for user in users.users:
+                if user.email == email and user.password == password:
+                    print(f"✅ Xush kelibsiz, {user.name}!")
+                    return user
+            print("❌ Email yoki parol noto‘g‘ri!")
+        except ValueError:
+            print("⚠️ Parol faqat raqamlardan iborat bo‘lishi kerak!")
 
-    def add_balance(self, account):
-        balance = float(input("To‘ldirmoqchi bo‘lgan summani kiriting :::: "))
-        account.add_balance(balance)
-        print(f"Sizga {balance} dollar qo‘shildi")
-    
-    def withdraw_balance(self, account):
-        summa = float(input("Yechib olmoqchi bo‘lgan summani kiriting :::: "))
-        if account.withdraw(summa):
-            print(f"Sizdan {summa} dollar yechildi")
-        else:
-            print("Balansda yetarli mablag‘ yo‘q!")
-    
-    def send_money(self, account):
-        account_number = int(input("account numberni kiriting ::: "))
-        user_account = self.bank.find_account_by_account_number(account_number)
-        summa = float(input(f"necha pul o'tkazmoqchisiz {user_account.owner_name}ga  :::: "))
-        res = account.withdraw(summa)
-        if res:
-            user_account.add_balance(summa)
-            print(f"Pulingiz {user_account.owner_name} ga ko'chirildi !")
-        else:
-            print("mablag' yetarli emas")
-    
-    
-    def make_task(self, account):
-        while True:
-            self.bank_menu()
-            n = int(input("tanlang ::::: "))
-            match n:
-                case 1:
-                    print(f"Balansingiz {account.get_balance()} dollar")
-                case 2:
-                    self.add_balance(account)
-                case 3:
-                    self.withdraw_balance(account)
-                case 4:
-                    self.send_money(account)
-                case 0:
-                    break
-                case _:
-                    print("Bunday menu mavjud emas !")
+    def mashina_ijaraga_berish(self, current_user):
+        try:
+            self.cars.show_cars()
+            model = input("Qaysi modelni ijaraga olmoqchisiz? : ")
+            for car in self.cars.cars:
+                if car.model.lower() == model.lower() and car.status:
+                    if car.owner_id == current_user.id:
+                        print("⚠️ Siz o‘zingiz qo‘shgan mashinani ijaraga ololmaysiz!")
+                    days = int(input("⏱ Necha kun ijaraga olmoqchisiz? : "))
+                    total = days * car.price
+                    car.status = False
 
-    def hisob_ochish(self):
-        name = input("Ismingizni kiriting :::: ")
-        balance = float(input("Hisobni qanchaga to‘ldirmoqchisiz :::: "))
-        pin_code = int(input("PIN kodni kiriting :::: "))
-        account = BankAccount(
-            n=len(self.bank.accounts) + 1,
-            name=name,
-            balance=balance,
-            pin_code=pin_code
-        )
-        self.bank.add_account(account)
-        print("Hisob muvaffaqiyatli yaratildi!")
-    
-    def hisobga_kirish(self):
-        pin_code = int(input("Kirish uchun PIN kodni kiriting :::: "))
-        account = self.bank.find_account_by_pincode(pin_code)
-        if account:
-            self.make_task(account)
-        else:
-            print("Bunday account topilmadi!")
+                    print(f"✅ Siz {car.model} mashinasini {days} kunga oldingiz.")
+                    print(f"💰 To‘lov: ${total}\n")
+        except ValueError:
+            print("⚠️ Iltimos, kunlar sonini faqat raqamda kiriting!\n")
 
-    def run(self):
-        command = {
-            1: self.hisob_ochish,
-            2: self.hisobga_kirish,
-            0: lambda: print("Tizim yopildi!! Hayr.")
-        }
-    
+    def mashinani_qaytarish(self):
+        try:
+            model = input("Qaysi modelni qaytarmoqchisiz? : ")
+            for car in self.cars.cars:
+                if car.model.lower() == model.lower():
+                    car.status = True
+                    print(f"🔙 {car.model} qaytarildi.")
+                    return
+            print("❌ Bunday model topilmadi.")
+
+        except Exception as e:
+            print(f"⚠️ Xatolik: {e}")
+
+    def run(self, users: Users):
+        current_user = None
         while True:
             self.menu()
-            order_n = int(input("tanlang :::: "))
-            res =  command.get(order_n,False)
-            if not res:
-                break
-            res()
+            try:
+                n = int(input("Tanlang :: "))
+            except ValueError:
+                print("⚠️ Iltimos, raqam kiriting!")
+                continue
+            match n:
+                case 1:
+                    users.add_user()
+                case 2:
+                    current_user = self.log_in(users)
+                case 3:
+                    self.cars.show_cars()
+                case 4:
+                    self.cars.mashina_qushish(current_user)
+                case 5:
+                    self.mashina_ijaraga_berish(current_user)
+                case 6:
+                    self.mashinani_qaytarish()
+                case 8:
+                    print(f"👋 {current_user.name}, tizimdan chiqdingiz.\n")
+                    current_user = None
+                case 9:
+                    print("👋 Dasturdan chiqildi.")
+                    break
 
-app = BankApp()
-app.run()
+if __name__ == "__main__":
+    app = RentCarApp()
+    users = Users()
+    app.run(users)
