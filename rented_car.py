@@ -1,8 +1,8 @@
 import datetime as dt
 
 class RentedCar:
-    def __init__(self, id: int, carId: int, day: int, date=None):
-        self.id = id
+    def __init__(self, carId: int, day: int):
         self.carId = carId
         self.day = day
-        self.date = date or dt.datetime.today()
+        self.date = dt.datetime.now()
+
