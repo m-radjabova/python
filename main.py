@@ -113,6 +113,7 @@ class RentCarApp:
                     current_user = None
                 case 9:
                     print("👋 Dasturdan chiqildi.")
+                    break
 
 if __name__ == "__main__":
     app = RentCarApp()

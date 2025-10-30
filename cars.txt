@@ -1,0 +1,6 @@
+1,BMW M5,200,True
+2,Toyota,100,True
+3,Lexus,100,True
+4,Sanata,150,True
+5,Hyundai,200,True
+6,Kia K5 ,130,True
